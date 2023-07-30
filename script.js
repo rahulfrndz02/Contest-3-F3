@@ -1,76 +1,61 @@
+const name= document.getElementById('name');
+const email=document.getElementById('email')
+const password= document.getElementById('password')
+const confirmPassword= document.getElementById('cpassword');
 
+document.getElementById('continue').addEventListener('click', (e)=>{
+    e.preventDefault();
+if(name.value.trim()===''||email.value.trim()===''||password.value.trim()===''||confirmPassword.value.trim()==='')
+{
+const errorMessage=document.getElementById('error-message');
+errorMessage.innerText="Error: All fields are mandatory!";
 
-// Generate a random access token
-function generateAccessToken() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const tokenLength = 16;
-    let token = '';
-    for (let i = 0; i < tokenLength; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      token += characters.charAt(randomIndex);
+}
+else {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.innerText = ""; // Clear the error message if all fields are filled
+  
+    // Perform other actions here if all fields are filled check if password and confirm password are not matched
+          if(password.value.trim()!==confirmPassword.value.trim()) 
+           {
+              alert("Password Mismatched");
+            }
+            else{
+                saveUser(name.value, email.value,password.value)
+            }  
+
+}
+   
+
+})
+function saveUser(name, email, password)
+{
+    let userObj={
+        name:name, 
+        email:email,
+        password:password,
+        // token:token,
     }
-    return token;
-  }
-  
-  // Check if the user is logged in and redirect accordingly
-  const user = JSON.parse(localStorage.getItem('user'));
-  const logoutButton = document.getElementById('logout-btn');
-  
-  if (user && user.accessToken) {
-    // User is logged in, show the profile page
-    const profileDetailsElement = document.getElementById('profile-details');
-    profileDetailsElement.innerHTML = `
-    <p><strong>Your name:</strong> ${user.yourname}</p>
-           <p><strong>Your email:</strong> ${user.youremail}</p>
-           <p><strong>Password:</strong> ${user.password}</p>
-          <p><strong>Confirm Password:</strong> ${user.confirmpassword}</p>
-    `;
-  
-    // Logout functionality
-    logoutButton.addEventListener('click', function () {
-      // Clear user details from local storage and redirect to the signup page
-      localStorage.removeItem('user');
-      window.location.href = 'index.html';
-    });
-  } else {
-    // User is not logged in, show the signup page
-    const signupForm = document.getElementById('signup-form');
-    const messageElement = document.getElementById('message');
-  
-    signupForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-  
-      // Get form data
-      const formData = new FormData(signupForm);
-      const userDetails = {
-        // firstName: formData.get('firstName'),
-        // lastName: formData.get('lastName'),
-        // email: formData.get('email'),
-        // yourname: formData.get('yourname'),
-                yourname: formData.get('yourname'),
-                youremail: formData.get('youremail'),
-                password: formData.get('password'),
-                confirmpassword : formData.get('confirmpassword')
-        // Add other necessary user details from the form
-      };
-       
-    //   if (!userDetails.yourname || !userDetails.youremail || !userDetails.password || userDetails.confirmpassword) {
-    //     messageElement.textContent = 'Error: All fields are mandatory';
-    //     return;
-    //   }
+    let users= JSON.parse(localStorage.getItem('users'))
+    if(users===null)
+    {
+        users=[];
+    }
+    users.push(userObj);
+    localStorage.setItem('users',JSON.stringify(users)); // updated it in localStorage
+
+    sessionStorage.setItem('loggenInUser',JSON.stringify(userObj));
+    name.value='';
+   email.value='';
+    password.value='';
+    confirmPassword.value='';
+    
+    // alert('sign up successful');
 
 
-      // Generate access token
-      userDetails.accessToken = generateAccessToken();
-  
-      // Store user details in local storage
-      localStorage.setItem('user', JSON.stringify(userDetails));
-  
-      // Show success message and redirect to profile page
-      messageElement.textContent = 'Signup successful!';
-      setTimeout(function () {
-        window.location.href = 'profile.html';
-      }, 1500);
-    });
-  }
-  
+    // this is how we handle multiple pages
+    // this will redirect to profile folder
+    window.location.href='./profile';
+//     const message=document.getElementById('message');
+// message.innerText="Signup Successful!";
+}
